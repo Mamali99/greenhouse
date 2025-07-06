@@ -2,6 +2,7 @@ package de.smartgrow.userservice.service;
 
 import de.smartgrow.userservice.dto.UserRequestDTO;
 import de.smartgrow.userservice.dto.UserResponseDTO;
+import de.smartgrow.userservice.exception.EmailAlreadyExistsException;
 import de.smartgrow.userservice.mapper.UserMapper;
 import de.smartgrow.userservice.model.User;
 import de.smartgrow.userservice.repository.UserRepository;
@@ -23,6 +24,9 @@ public class UserService {
     }
 
     public UserResponseDTO createUser(UserRequestDTO userRequestDTO){
+        if(userRepository.existsByEmail(userRequestDTO.getEmail())){
+            throw new EmailAlreadyExistsException("A user with this Email "  + userRequestDTO.getEmail() + " already exists");
+        }
         User newUser = userRepository.save(UserMapper.toEntity(userRequestDTO));
         return UserMapper.toDTO(newUser);
     }

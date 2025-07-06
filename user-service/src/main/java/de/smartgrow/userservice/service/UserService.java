@@ -1,5 +1,6 @@
 package de.smartgrow.userservice.service;
 
+import de.smartgrow.userservice.dto.UserRequestDTO;
 import de.smartgrow.userservice.dto.UserResponseDTO;
 import de.smartgrow.userservice.mapper.UserMapper;
 import de.smartgrow.userservice.model.User;
@@ -19,5 +20,10 @@ public class UserService {
         List<User> users = userRepository.findAll();
         return users.stream().map(UserMapper::toDTO).toList();
 
+    }
+
+    public UserResponseDTO createUser(UserRequestDTO userRequestDTO){
+        User newUser = userRepository.save(UserMapper.toEntity(userRequestDTO));
+        return UserMapper.toDTO(newUser);
     }
 }

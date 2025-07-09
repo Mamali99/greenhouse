@@ -1,0 +1,11 @@
+### Updates an existing user entity
+PUT http://localhost:4000/users/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+Content-Type: application/json
+
+{
+  "username": "Mohammad",
+  "email": "momo2@example.com",
+  "password": "momo"
+}
+
+###

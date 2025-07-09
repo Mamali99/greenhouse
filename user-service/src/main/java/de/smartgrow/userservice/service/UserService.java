@@ -3,6 +3,7 @@ package de.smartgrow.userservice.service;
 import de.smartgrow.userservice.dto.UserRequestDTO;
 import de.smartgrow.userservice.dto.UserResponseDTO;
 import de.smartgrow.userservice.exception.EmailAlreadyExistsException;
+import de.smartgrow.userservice.exception.UserNotFoundException;
 import de.smartgrow.userservice.mapper.UserMapper;
 import de.smartgrow.userservice.model.User;
 import de.smartgrow.userservice.repository.UserRepository;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -29,5 +31,17 @@ public class UserService {
         }
         User newUser = userRepository.save(UserMapper.toEntity(userRequestDTO));
         return UserMapper.toDTO(newUser);
+    }
+
+    public UserResponseDTO updateUser(UUID id, UserRequestDTO userRequestDTO){
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with ID " + id));
+        if(userRepository.existsByEmail(userRequestDTO.getEmail())){
+            throw new EmailAlreadyExistsException("A user with this Email "  + userRequestDTO.getEmail() + " already exists");
+        }
+        user.setUsername(userRequestDTO.getUsername());
+        user.setEmail(userRequestDTO.getEmail());
+        user.setPassword(userRequestDTO.getPassword());
+        User updatedUser = userRepository.save(user);
+        return UserMapper.toDTO(updatedUser);
     }
 }

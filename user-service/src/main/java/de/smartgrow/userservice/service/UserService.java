@@ -40,7 +40,7 @@ public class UserService {
         }
         user.setUsername(userRequestDTO.getUsername());
         user.setEmail(userRequestDTO.getEmail());
-        user.setPassword(userRequestDTO.getPassword());
+        //user.setPassword(userRequestDTO.getPassword()); we're not allowed to change the password in this way!!! we should handle it in a different way
         User updatedUser = userRepository.save(user);
         return UserMapper.toDTO(updatedUser);
     }

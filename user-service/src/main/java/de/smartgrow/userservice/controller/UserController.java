@@ -2,6 +2,7 @@ package de.smartgrow.userservice.controller;
 
 import de.smartgrow.userservice.dto.UserRequestDTO;
 import de.smartgrow.userservice.dto.UserResponseDTO;
+import de.smartgrow.userservice.dto.validators.CreateUserValidationGroup;
 import de.smartgrow.userservice.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
@@ -28,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO userRequestDTO) {
+    public ResponseEntity<UserResponseDTO> createUser(@Validated({Default.class, CreateUserValidationGroup.class}) @RequestBody UserRequestDTO userRequestDTO) {
         UserResponseDTO newUser = userService.createUser(userRequestDTO);
         return ResponseEntity.ok().body(newUser);
     }

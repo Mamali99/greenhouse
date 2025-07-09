@@ -1,5 +1,6 @@
 package de.smartgrow.userservice.dto;
 
+import de.smartgrow.userservice.dto.validators.CreateUserValidationGroup;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -12,10 +13,10 @@ public class UserRequestDTO {
     @Size(max = 100, message = "Email should be valid")
     private String email;
 
-    @NotBlank(message = "Password is required")
+    @NotBlank(groups = CreateUserValidationGroup.class, message = "Password is required")
     private String password;
 
-    @NotBlank(message = "Registered date is required")
+    @NotBlank(groups = CreateUserValidationGroup.class, message = "Registered date is required")
     private String registeredDate;
 
 

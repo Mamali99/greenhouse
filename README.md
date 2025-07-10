@@ -1,6 +1,6 @@
 # Greenhouse Platform – Smart IoT Monitoring and Automation
 
-![Architecture Diagram](image1)
+![Architecture Diagram](docs/architecture-diagram.png)
 
 ## Overview
 

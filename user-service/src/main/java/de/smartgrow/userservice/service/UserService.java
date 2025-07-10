@@ -7,7 +7,6 @@ import de.smartgrow.userservice.exception.UserNotFoundException;
 import de.smartgrow.userservice.mapper.UserMapper;
 import de.smartgrow.userservice.model.User;
 import de.smartgrow.userservice.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,8 +15,11 @@ import java.util.UUID;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public List<UserResponseDTO> getAllUsers(){
         List<User> users = userRepository.findAll();
@@ -44,4 +46,13 @@ public class UserService {
         User updatedUser = userRepository.save(user);
         return UserMapper.toDTO(updatedUser);
     }
+
+    public void deleteUser(UUID id){
+        if (userRepository.existsById(id)){
+            userRepository.deleteById(id);
+        } else {
+            throw new UserNotFoundException("User not found with ID " + id);
+        }
+    }
+
 }

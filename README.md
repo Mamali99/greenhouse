@@ -94,14 +94,6 @@ We welcome contributions! Please open issues or pull requests for new features, 
 
 ---
 
-## License
-
-This project is licensed under the MIT License.
-
----
-
 ## Diagram Reference
 
 The architecture diagram above illustrates the flow and interaction of all system components.
-
-![Architecture Diagram](image1)

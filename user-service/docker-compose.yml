@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # 1. The database
+  user-service-db:
+    image: postgres:latest
+    container_name: user-service-db
+    ports:
+      - "5000:5432"
+    volumes:
+      - ./db_volumes/user-service-db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=momo
+      - POSTGRES_PASSWORD=momo
+      - POSTGRES_DB=db
+    networks:
+      - internal
+
+
+  # 2. user-service
+  user-service:
+    build: .
+    container_name: user-service
+    ports:
+      - "4000:4000"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-service-db:5432/db
+      - SPRING_DATASOURCE_USERNAME=momo
+      - SPRING_DATASOURCE_PASSWORD=momo
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_SQL_INIT_MODE=never
+    depends_on:
+      - user-service-db
+    networks:
+      - internal
+
+  # 3. The network definition
+networks:
+  internal:
+    driver: bridge

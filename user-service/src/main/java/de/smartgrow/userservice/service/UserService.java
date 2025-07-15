@@ -4,6 +4,7 @@ import de.smartgrow.userservice.dto.UserRequestDTO;
 import de.smartgrow.userservice.dto.UserResponseDTO;
 import de.smartgrow.userservice.exception.EmailAlreadyExistsException;
 import de.smartgrow.userservice.exception.UserNotFoundException;
+import de.smartgrow.userservice.grpc.BillingServiceGrpcClient;
 import de.smartgrow.userservice.mapper.UserMapper;
 import de.smartgrow.userservice.model.User;
 import de.smartgrow.userservice.repository.UserRepository;
@@ -16,9 +17,12 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BillingServiceGrpcClient billingServiceGrpcClient;
 
-    public UserService(UserRepository userRepository) {
+
+    public UserService(UserRepository userRepository, BillingServiceGrpcClient billingServiceGrpcClient) {
         this.userRepository = userRepository;
+        this.billingServiceGrpcClient = billingServiceGrpcClient;
     }
 
     public List<UserResponseDTO> getAllUsers(){
@@ -32,6 +36,7 @@ public class UserService {
             throw new EmailAlreadyExistsException("A user with this Email "  + userRequestDTO.getEmail() + " already exists");
         }
         User newUser = userRepository.save(UserMapper.toEntity(userRequestDTO));
+        billingServiceGrpcClient.createBillingAccount(newUser.getId().toString(), newUser.getUsername(), newUser.getEmail());
         return UserMapper.toDTO(newUser);
     }
 

@@ -1,7 +1,5 @@
-version: '3.8'
-
 services:
-  # 1. The database
+  # 1. The Database Service
   user-service-db:
     image: postgres:latest
     container_name: user-service-db
@@ -10,16 +8,16 @@ services:
     volumes:
       - ./user-service/db_volumes/user-service-db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=momo
-      - POSTGRES_PASSWORD=momo
-      - POSTGRES_DB=db
+      POSTGRES_USER: momo
+      POSTGRES_PASSWORD: momo
+      POSTGRES_DB: db
     networks:
       - internal
 
   # 2. The Billing Service
   billing-service:
     build:
-      context: billing-service # Path to the billing-service directory
+      context: ./billing-service
     container_name: billing-service
     ports:
       - "4001:4001" # REST port
@@ -27,26 +25,28 @@ services:
     networks:
       - internal
 
-  # 3. user-service
+  # 3. The User Service
   user-service:
-    build: user-service
+    build:
+      context: ./user-service
     container_name: user-service
     ports:
       - "4000:4000"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-service-db:5432/db
-      - SPRING_DATASOURCE_USERNAME=momo
-      - SPRING_DATASOURCE_PASSWORD=momo
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - SPRING_SQL_INIT_MODE=never
-      - GRPC_BILLING_SERVICE_ADDRESS=billing-service:9001
+      SPRING_DATASOURCE_URL: jdbc:postgresql://user-service-db:5432/db
+      SPRING_DATASOURCE_USERNAME: momo
+      SPRING_DATASOURCE_PASSWORD: momo
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SQL_INIT_MODE: never
+      BILLING_SERVICE_ADDRESS: billing-service
+      BILLING_SERVICE_GRPC_PORT: 9001
     depends_on:
       - user-service-db
       - billing-service
     networks:
       - internal
 
-  # 3. The network definition
+# 4. The Network Definition
 networks:
   internal:
     driver: bridge

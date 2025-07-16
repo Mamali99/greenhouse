@@ -18,7 +18,9 @@ public class BillingServiceGrpcClient {
 
     public BillingServiceGrpcClient(@Value("${billing.service.address:localhost}") String serverAddress,
                                     @Value("${billing.service.grpc.port:9001}") int serverPort) {
+
         log.info("Connecting to Billing Service GRPC server at {}:{}", serverAddress, serverPort);
+
         ManagedChannel channel = ManagedChannelBuilder.forAddress(serverAddress, serverPort).usePlaintext().build();
         this.blockingStub = BillingServiceGrpc.newBlockingStub(channel);
     }
@@ -26,7 +28,9 @@ public class BillingServiceGrpcClient {
     public BillingResponse createBillingAccount(String userId, String name, String email){
         BillingRequest request = BillingRequest.newBuilder().setUserId(userId).setName(name).setEmail(email).build();
         BillingResponse response = blockingStub.createBillingAccount(request);
+
         log.info("Received response from billing service via GRPC: {}", response);
+
         return response;
     }
 }

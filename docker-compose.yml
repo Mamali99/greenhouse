@@ -21,6 +21,8 @@ services:
     ports:
       - "9092:9092" # Internal listener for other services
       - "9094:9094" # External listener for my local machine
+    volumes:
+      - ./kafka_data:/bitnami/kafka
     environment:
       KAFKA_CFG_NODE_ID: 0
       KAFKA_CFG_PROCESS_ROLES: 'broker,controller'

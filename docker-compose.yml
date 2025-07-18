@@ -54,8 +54,6 @@ services:
     build:
       context: ./user-service
     container_name: user-service
-    ports:
-      - "4000:4000"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://user-service-db:5432/db
       SPRING_DATASOURCE_USERNAME: momo
@@ -83,6 +81,19 @@ services:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       - kafka
+    networks:
+      - internal
+
+  # 6. The API Gateway
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "4004:4004"
+    depends_on:
+      - user-service
+      - analytics-service
     networks:
       - internal
 

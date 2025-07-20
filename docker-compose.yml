@@ -13,8 +13,33 @@ services:
       POSTGRES_DB: db
     networks:
       - internal
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U momo -d db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # 2. The Kafka Broker
+  # 2. The Auth Database Service
+  auth-service-db:
+    image: postgres:latest
+    container_name: auth-service-db
+    ports:
+      - "5001:5432"
+    volumes:
+      - ./auth-service/db_volumes/auth-service-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: momo
+      POSTGRES_PASSWORD: momo
+      POSTGRES_DB: db
+    networks:
+      - internal
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U momo -d db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. The Kafka Broker
   kafka:
     image: bitnami/kafka:latest
     container_name: kafka
@@ -34,7 +59,7 @@ services:
     networks:
       - internal
 
-  # 3. The Billing Service
+  # 4. The Billing Service
   billing-service:
     build:
       context: ./billing-service
@@ -49,7 +74,7 @@ services:
     networks:
       - internal
 
-  # 4. The User Service
+  # 5. The User Service
   user-service:
     build:
       context: ./user-service
@@ -64,13 +89,16 @@ services:
       BILLING_SERVICE_GRPC_PORT: 9001
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
-      - user-service-db
-      - billing-service
-      - kafka
+      user-service-db:
+        condition: service_healthy
+      billing-service:
+        condition: service_started
+      kafka:
+        condition: service_started
     networks:
       - internal
 
-  # 5. The Analytics Service
+  # 6. The Analytics Service
   analytics-service:
     build:
       context: ./analytics-service
@@ -84,7 +112,26 @@ services:
     networks:
       - internal
 
-  # 6. The API Gateway
+  # 7. The Auth Service
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: auth-service
+    ports:
+      - "4005:4005"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-service-db:5432/db
+      SPRING_DATASOURCE_USERNAME: momo
+      SPRING_DATASOURCE_PASSWORD: momo
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SQL_INIT_MODE: always
+    depends_on:
+      auth-service-db:
+        condition: service_healthy
+    networks:
+      - internal
+
+  # 8. The API Gateway
   api-gateway:
     build:
       context: ./api-gateway
@@ -94,6 +141,7 @@ services:
     depends_on:
       - user-service
       - analytics-service
+      - auth-service
     networks:
       - internal
 

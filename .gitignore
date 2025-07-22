@@ -1,0 +1,3 @@
+# Ignore Docker volume directories for databases
+auth-service/db_volumes/
+user-service/db_volumes/

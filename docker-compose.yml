@@ -125,6 +125,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: momo
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_SQL_INIT_MODE: always
+      JWT_SECRET: 988ef16e1ee16b45876847af3648b038bba865777541a5ce7e1ceec3a4d194a18f116bd2
     depends_on:
       auth-service-db:
         condition: service_healthy

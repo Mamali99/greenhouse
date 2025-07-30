@@ -3,6 +3,7 @@ package de.smartgrow.authservice.service;
 import de.smartgrow.authservice.dto.LoginRequestDTO;
 import de.smartgrow.authservice.model.User;
 import de.smartgrow.authservice.util.JwtUtil;
+import io.jsonwebtoken.JwtException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,5 +28,14 @@ public class AuthService {
                 .filter(u -> passwordEncoder.matches(loginRequestDTO.getPassword(), u.getPassword()))
                 .map(u -> jwtUtil.generateToken(u.getEmail(), u.getRole()));
         return token;
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            jwtUtil.validateToken(token);
+            return true;
+        } catch (JwtException e) {
+            return false;
+        }
     }
 }

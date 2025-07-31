@@ -7,6 +7,13 @@ spring:
       server:
         webflux:
           routes:
+            - id: auth-service-route
+              uri: http://auth-service:4005
+              predicates:
+                - Path=/auth/**
+              filters:
+                  - StripPrefix=1
+
             - id: user-service-route
               uri: http://user-service:4000
               predicates:

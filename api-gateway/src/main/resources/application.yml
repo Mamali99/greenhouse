@@ -20,6 +20,7 @@ spring:
                 - Path=/api/users/**
               filters:
                 - StripPrefix=1
+                - JwtValidation
 
             - id: api-docs-user-route
               uri: http://user-service:4000
